@@ -1,7 +1,6 @@
 import "dotenv/config";
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
-import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { requireAuth } from "./routes/auth.js";
 import authRoute from "./routes/auth.js";
@@ -9,32 +8,43 @@ import chatRoute from "./routes/chat.js";
 import tasksRoute from "./routes/tasks.js";
 import agentChatRoute from "./routes/agent-chat.js";
 import { startWorker } from "./services/queue.js";
+import type { Context, Next } from "hono";
 
 const app = new Hono();
 
 // Global middleware
 app.use("*", logger());
-app.use("*", cors({
-  origin:       process.env.FRONTEND_URL ?? "http://localhost:5173",
-  credentials:  true,
-  allowMethods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowHeaders: ["Content-Type", "Authorization"],
-  exposeHeaders: ["Content-Length"],
-  maxAge:       86400,
-}));
+
+// Manual CORS middleware — handles preflight before any routing/auth
+app.use("*", async (c: Context, next: Next) => {
+  const origin = process.env.FRONTEND_URL ?? "http://localhost:5173";
+
+  c.header("Access-Control-Allow-Origin", origin);
+  c.header("Access-Control-Allow-Credentials", "true");
+
+  if (c.req.method === "OPTIONS") {
+    c.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,PATCH,OPTIONS");
+    c.header("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    c.header("Access-Control-Max-Age", "86400");
+    return c.body(null, 204);
+  }
+
+  await next();
+});
 
 // Public routes
 app.get("/health", (c) => c.json({ ok: true }));
 app.route("/api/v1/auth", authRoute);
 
-// Protected routes — all require a valid Supabase JWT
-const api = new Hono();
-api.use("*", requireAuth);
-api.route("/chat",    chatRoute);
-api.route("/tasks",   tasksRoute);
-api.route("/agents",  agentChatRoute);
+// Auth guard for protected route groups
+app.use("/api/v1/chat/*", requireAuth);
+app.use("/api/v1/tasks/*", requireAuth);
+app.use("/api/v1/agents/*", requireAuth);
 
-app.route("/api/v1", api);
+// Protected routes — mounted directly so CORS middleware always applies
+app.route("/api/v1/chat",    chatRoute);
+app.route("/api/v1/tasks",   tasksRoute);
+app.route("/api/v1/agents",  agentChatRoute);
 
 // Start BullMQ worker for background agent tasks
 const worker = startWorker();
