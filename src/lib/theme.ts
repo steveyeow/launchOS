@@ -24,11 +24,11 @@ export const T = {
   // Fonts
   sans:  "'Inter', sans-serif",
   mono:  "'DM Mono', monospace",
-  serif: "ui-serif, 'New York', Georgia, serif",
+  serif: "'Source Serif 4', ui-serif, Georgia, serif",
 } as const;
 
 export const GLOBAL_STYLES = `
-  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@300;400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;0,8..60,600;1,8..60,300&display=swap');
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html, body, #root { height: 100%; }
   body { font-family: ${T.sans}; background: ${T.bg}; color: ${T.text}; }

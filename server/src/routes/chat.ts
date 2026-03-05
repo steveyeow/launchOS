@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { streamSSE } from "hono/streaming";
 import { streamAriaResponse } from "../agents/aria.js";
 import { db, conversations, messages } from "../db/index.js";
-import { eq, and, asc } from "drizzle-orm";
+import { eq, and, asc, or } from "drizzle-orm";
 import type { ApiResponse } from "../../../shared/types.js";
 import type { AppEnv } from "../lib/hono.js";
 
@@ -85,6 +85,27 @@ chat.get("/conversations", async (c) => {
   );
 
   return c.json<ApiResponse<typeof withTitles>>({ data: withTitles, error: null });
+});
+
+// GET /api/v1/chat/conversations/:id/messages
+chat.get("/conversations/:id/messages", async (c) => {
+  const userId = c.get("userId") as string;
+  const convId = c.req.param("id");
+
+  const conv = await db.query.conversations.findFirst({
+    where: and(eq(conversations.id, convId), eq(conversations.userId, userId)),
+  });
+  if (!conv) return c.json<ApiResponse<null>>({ data: null, error: "not found" }, 404);
+
+  const msgs = await db.query.messages.findMany({
+    where: and(
+      eq(messages.conversationId, convId),
+      or(eq(messages.role, "user"), eq(messages.role, "assistant")),
+    ),
+    orderBy: (t) => asc(t.createdAt),
+  });
+
+  return c.json<ApiResponse<typeof msgs>>({ data: msgs, error: null });
 });
 
 export default chat;

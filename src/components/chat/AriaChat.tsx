@@ -12,9 +12,9 @@ const SUGGESTIONS = [
 
 function greeting() {
   const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
-  return "Good evening";
+  if (h < 12) return "Morning";
+  if (h < 18) return "Afternoon";
+  return "Evening";
 }
 
 interface Props {
@@ -27,7 +27,7 @@ interface Props {
 }
 
 export default function AriaChat({ onNavigate, conversationId: initConvId, onNewConversation, initialPrompt, onInitialPromptConsumed, userName }: Props) {
-  const { messages, streaming, error, sendMessage, conversationId } = useAriaChat(initConvId);
+  const { messages, streaming, loading, error, sendMessage, conversationId } = useAriaChat(initConvId);
   const [input, setInput] = useState(initialPrompt ?? "");
   const endRef            = useRef<HTMLDivElement>(null);
   const textareaRef       = useRef<HTMLTextAreaElement>(null);
@@ -71,7 +71,7 @@ export default function AriaChat({ onNavigate, conversationId: initConvId, onNew
     if (textareaRef.current) textareaRef.current.style.height = "auto";
   }
 
-  const isEmpty = messages.length === 0 && !streaming;
+  const isEmpty = messages.length === 0 && !streaming && !loading;
   const lastMsg = messages[messages.length - 1];
   const showThinking = streaming && (!lastMsg || lastMsg.role === "user");
 
@@ -81,14 +81,25 @@ export default function AriaChat({ onNavigate, conversationId: initConvId, onNew
         .replace(/^./, c => c.toUpperCase())
     : "there";
 
+  if (loading) {
+    return (
+      <div style={{ display: "flex", height: "100%", alignItems: "center", justifyContent: "center", background: T.bg }}>
+        <span style={{ width: 18, height: 18, border: `2px solid ${T.border}`, borderTopColor: T.textDim, borderRadius: "50%", display: "inline-block", animation: "spin .7s linear infinite" }} />
+      </div>
+    );
+  }
+
   if (isEmpty) {
     return (
       <div style={{ display: "flex", flexDirection: "column", height: "100%", background: T.bg }}>
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 24px", animation: "fadeUp .35s ease" }}>
-          <div style={{ width: "100%", maxWidth: 640 }}>
-            <h2 style={{ fontSize: 26, fontWeight: 500, color: T.text, marginBottom: 24, letterSpacing: "-0.3px" }}>
-              {greeting()}, {firstName}
-            </h2>
+          <div style={{ width: "100%", maxWidth: 640, margin: "0 auto" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 24, justifyContent: "center" }}>
+              <PixelBot />
+              <h2 style={{ fontSize: 32, fontWeight: 300, fontFamily: T.serif, color: "#333", letterSpacing: "-0.01em", lineHeight: 1.3, margin: 0 }}>
+                {greeting()}, {firstName}
+              </h2>
+            </div>
             <InputBox ref={textareaRef} value={input} onChange={e => { setInput(e.target.value); resizeTextarea(); }} onKeyDown={handleKeyDown} onSubmit={() => submit()} streaming={streaming} large />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 16 }}>
               {SUGGESTIONS.map(s => (
@@ -320,6 +331,40 @@ function ThinkingDots() {
         ))}
       </div>
     </div>
+  );
+}
+
+// ── Pixel Bot Icon ────────────────────────────────────────────────────────────
+// 10×10 pixel grid drawn as an SVG, 1 unit = 4px → 40px total
+// Each rect is one "pixel". Palette: body=#1a1714, eyes=#16a34a, antenna=#1a1714
+function PixelBot() {
+  const S = 4; // pixel size in px
+  const c = T.textDim; // body colour
+  const g = T.green;   // eye / accent colour
+  const _ = null;      // transparent
+
+  // 10-row × 10-col grid, row 0 = top
+  const grid: (string | null)[][] = [
+    [_,_,_,_,c,c,_,_,_,_],  // 0 antenna base
+    [_,_,_,_,c,_,_,_,_,_],  // 1 antenna
+    [_,c,c,c,c,c,c,c,c,_],  // 2 head top
+    [_,c,_,_,_,_,_,_,c,_],  // 3 head inner top
+    [_,c,_,g,g,g,g,_,c,_],  // 4 visor top
+    [_,c,_,g,_,_,g,_,c,_],  // 5 eyes row
+    [_,c,_,g,g,g,g,_,c,_],  // 6 visor bottom
+    [_,c,_,_,_,_,_,_,c,_],  // 7 head inner bottom
+    [_,c,c,c,c,c,c,c,c,_],  // 8 head bottom / neck
+    [_,_,c,c,_,_,c,c,_,_],  // 9 feet
+  ];
+
+  return (
+    <svg width={10 * S} height={10 * S} viewBox={`0 0 ${10 * S} ${10 * S}`} style={{ imageRendering: "pixelated", flexShrink: 0 }}>
+      {grid.map((row, r) =>
+        row.map((fill, col) =>
+          fill ? <rect key={`${r}-${col}`} x={col * S} y={r * S} width={S} height={S} fill={fill} /> : null
+        )
+      )}
+    </svg>
   );
 }
 

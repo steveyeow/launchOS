@@ -105,6 +105,13 @@ export async function getAgentConversations(agentName: string): Promise<Conversa
   return json.data ?? [];
 }
 
+export async function getConversationMessages(conversationId: string): Promise<{ id: string; role: string; content: string }[]> {
+  const res  = await fetch(`${BASE}/api/v1/chat/conversations/${conversationId}/messages`, { headers: await authHeaders() });
+  const json: ApiResponse<{ id: string; role: string; content: string }[]> = await res.json();
+  if (json.error) throw new Error(json.error);
+  return json.data ?? [];
+}
+
 export async function getConversations(): Promise<Conversation[]> {
   const res = await fetch(`${BASE}/api/v1/chat/conversations`, {
     headers: await authHeaders(),

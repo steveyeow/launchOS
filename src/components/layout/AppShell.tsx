@@ -16,6 +16,7 @@ interface Props {
 export default function AppShell({ user }: Props) {
   const [tab, setTab]                     = useState<SidebarTab>("chat");
   const [activeConvId, setActiveConvId]   = useState<string | undefined>();
+  const [chatKey, setChatKey]             = useState(0);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [initialPrompt, setInitialPrompt] = useState<string | undefined>();
   const { tasks } = useTasks(user.id);
@@ -26,6 +27,8 @@ export default function AppShell({ user }: Props) {
 
   useEffect(() => { loadConversations(); }, [loadConversations]);
 
+  // Called by AriaChat when a new conversation is auto-created mid-session.
+  // Only updates sidebar state — does NOT change chatKey, so AriaChat stays mounted.
   function handleNewConversation(id: string) {
     setActiveConvId(id);
     loadConversations();
@@ -34,17 +37,20 @@ export default function AppShell({ user }: Props) {
   function handleNewChat() {
     setActiveConvId(undefined);
     setInitialPrompt(undefined);
+    setChatKey(k => k + 1); // force remount → fresh empty state
     setTab("chat");
   }
 
   function handleSkillChat(prompt?: string) {
     setActiveConvId(undefined);
     setInitialPrompt(prompt);
+    setChatKey(k => k + 1); // force remount so initialPrompt takes effect
     setTab("chat");
   }
 
   function handleSelectConversation(id: string) {
     setActiveConvId(id);
+    setChatKey(k => k + 1); // force remount to load the selected conversation
     setTab("chat");
   }
 
@@ -63,7 +69,7 @@ export default function AppShell({ user }: Props) {
       <main style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
         {tab === "chat" && (
           <AriaChat
-            key={activeConvId ?? "new"}
+            key={chatKey}
             onNavigate={setTab}
             conversationId={activeConvId}
             onNewConversation={handleNewConversation}

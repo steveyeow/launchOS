@@ -1,5 +1,5 @@
-import { useState, useCallback, useRef } from "react";
-import { streamChat } from "../lib/api.js";
+import { useState, useCallback, useRef, useEffect } from "react";
+import { streamChat, getConversationMessages } from "../lib/api.js";
 
 export interface ChatMessage {
   id:      string;
@@ -13,10 +13,26 @@ export function useAriaChat(initialConversationId?: string) {
   const [messages, setMessages]             = useState<ChatMessage[]>([]);
   const [conversationId, setConversationId] = useState<string | undefined>(initialConversationId);
   const [streaming, setStreaming]           = useState(false);
+  const [loading, setLoading]              = useState(!!initialConversationId);
   const [error, setError]                   = useState<string | null>(null);
   const abortRef                            = useRef(false);
   // Tracks the id of the in-flight assistant message (added on first text chunk)
   const assistantIdRef                      = useRef<string | null>(null);
+
+  // Load history when opening an existing conversation
+  useEffect(() => {
+    if (!initialConversationId) return;
+    getConversationMessages(initialConversationId)
+      .then(msgs => {
+        setMessages(msgs.map(m => ({
+          id:      m.id,
+          role:    m.role as "user" | "assistant",
+          content: m.content,
+        })));
+      })
+      .catch(() => { /* non-critical */ })
+      .finally(() => setLoading(false));
+  }, [initialConversationId]);
 
   const sendMessage = useCallback(async (text: string) => {
     if (streaming || !text.trim()) return;
@@ -79,5 +95,5 @@ export function useAriaChat(initialConversationId?: string) {
     }
   }, [streaming, conversationId]);
 
-  return { messages, conversationId, streaming, error, sendMessage };
+  return { messages, conversationId, streaming, loading, error, sendMessage };
 }
