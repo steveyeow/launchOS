@@ -171,21 +171,28 @@ function clearState() {
   try { localStorage.removeItem(LS_KEY); } catch { /* noop */ }
 }
 
+const INITIAL_MESSAGES: ChatMessage[] = [
+  { id: "u-init", role: "user", content: "Create 3 TikTok videos for my B2B SaaS product — we help founders automate GTM" },
+  { id: "a-0", role: "assistant", content: getCSResponse(0).text },
+  { id: "u-1", role: "user", content: "Love it, produce all 3" },
+  { id: "a-1", role: "assistant", content: getCSResponse(1).text },
+];
+
 export default function ContentStudioView({ onNavigate, userName }: Props) {
   const saved = useRef(loadState());
 
-  const [messages, setMessages] = useState<ChatMessage[]>(saved.current?.messages ?? []);
+  const [messages, setMessages] = useState<ChatMessage[]>(saved.current?.messages ?? INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const [streamingText, setStreamingText] = useState("");
-  const [phase, setPhase] = useState<Phase>(saved.current?.phase ?? 1);
+  const [phase, setPhase] = useState<Phase>(saved.current?.phase ?? 2);
   const [wsTab, setWsTab] = useState<WorkspaceTab>("content");
-  const [contentPieces, setContentPieces] = useState<ContentPiece[]>(saved.current?.contentPieces ?? []);
+  const [contentPieces, setContentPieces] = useState<ContentPiece[]>(saved.current?.contentPieces ?? DEMO_CONTENT);
   const [editingPiece, setEditingPiece] = useState<ContentPiece | null>(null);
 
   const endRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const turnRef = useRef(saved.current?.turn ?? 0);
+  const turnRef = useRef(saved.current?.turn ?? 2);
 
   useEffect(() => {
     saveState({ messages, phase, contentPieces, turn: turnRef.current });
