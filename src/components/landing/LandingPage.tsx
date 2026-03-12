@@ -237,10 +237,10 @@ export default function LandingPage({ onGetStarted }: Props) {
           </div>
         </div>
 
-        {/* Right — auto-playing terminal demo */}
+        {/* Right — live activity feed */}
         <div style={{ flex: 1, minWidth: 0, height: "calc(100% - 60px)", maxHeight: 560, animation: "fadeUp .45s .1s ease both", animationFillMode: "forwards", opacity: 0 }}>
-          <DemoTerminal />
-          <p style={{ marginTop: 8, fontSize: 11, color: T.textDim, fontFamily: T.mono, textAlign: "center" }}>↑ live preview — loops automatically</p>
+          <LandingLiveActivity />
+          <p style={{ marginTop: 8, fontSize: 11, color: T.textDim, fontFamily: T.mono, textAlign: "center" }}>↑ live agent activity — this is what GetU does for you</p>
         </div>
       </div>
 
@@ -263,7 +263,156 @@ export default function LandingPage({ onGetStarted }: Props) {
   );
 }
 
-// ── Demo Terminal ─────────────────────────────────────────────────────────────
+// ── Landing Live Activity ─────────────────────────────────────────────────────
+
+interface LandingLogLine {
+  id: number;
+  agent: string;
+  color: string;
+  text: string;
+  time: string;
+  status: "done" | "in_progress";
+}
+
+const LANDING_AGENTS = [
+  { name: "Twitter Manager",  color: "#D97706", initials: "TM", stat: "47 posts" },
+  { name: "Reddit Scout",     color: "#FF4500", initials: "RS", stat: "34 signals" },
+  { name: "Lead Finder",      color: "#0A66C2", initials: "LF", stat: "86 leads" },
+  { name: "Community Finder", color: "#059669", initials: "CF", stat: "23 groups" },
+];
+
+const LANDING_SEED: Omit<LandingLogLine, "id">[] = [
+  { agent: "Twitter Manager",  color: "#D97706", text: "Analyzing trending hashtags in B2B SaaS…",                  time: "09:41:02", status: "done" },
+  { agent: "Reddit Scout",     color: "#FF4500", text: "Connecting to Reddit API…",                                  time: "09:41:05", status: "done" },
+  { agent: "Lead Finder",      color: "#0A66C2", text: "Starting LinkedIn search: VP Marketing, Series A…",          time: "09:41:08", status: "done" },
+  { agent: "Community Finder", color: "#059669", text: "Scanning Discord server directory for B2B SaaS…",            time: "09:41:11", status: "done" },
+  { agent: "Twitter Manager",  color: "#D97706", text: "Found 12 trending topics matching ICP criteria",             time: "09:41:14", status: "done" },
+  { agent: "Reddit Scout",     color: "#FF4500", text: "Scanning r/SaaS — 342 posts in last 24h",                    time: "09:41:18", status: "done" },
+  { agent: "Lead Finder",      color: "#0A66C2", text: "Querying Sales Navigator: 127 results",                      time: "09:41:22", status: "done" },
+  { agent: "Community Finder", color: "#059669", text: "Found 'SaaS Growth Hackers' Discord — 2.4K members",         time: "09:41:25", status: "done" },
+  { agent: "Reddit Scout",     color: "#FF4500", text: "Signal: 'Looking for alternatives to manual outreach'",      time: "09:41:28", status: "done" },
+  { agent: "Twitter Manager",  color: "#D97706", text: "Drafted tweet: 'Top 3 GTM mistakes founders make'",          time: "09:41:33", status: "done" },
+  { agent: "Lead Finder",      color: "#0A66C2", text: "Scoring 18 profiles by ICP quality…",                        time: "09:41:38", status: "done" },
+  { agent: "Twitter Manager",  color: "#D97706", text: "Tweet published — tracking engagement",                      time: "09:41:45", status: "done" },
+  { agent: "Community Finder", color: "#059669", text: "r/SaaSMarketing — 18K members, high ICP density",            time: "09:41:49", status: "done" },
+];
+
+const LANDING_STREAM: Omit<LandingLogLine, "id">[] = [
+  { agent: "Reddit Scout",     color: "#FF4500", text: "Signal: 'Best tools for cold email automation?'",            time: "09:41:52", status: "done" },
+  { agent: "Lead Finder",      color: "#0A66C2", text: "4 high-quality leads identified (score > 0.85)",             time: "09:41:58", status: "done" },
+  { agent: "Twitter Manager",  color: "#D97706", text: "Replying to @sre_sarah — 'We catch 5xx before PD fires'",   time: "09:42:04", status: "done" },
+  { agent: "Reddit Scout",     color: "#FF4500", text: "Scanning r/startups — 189 posts in last 24h",                time: "09:42:10", status: "done" },
+  { agent: "Community Finder", color: "#059669", text: "Found Twitter community: #SaaSTwitter — 5.1K active",        time: "09:42:15", status: "done" },
+  { agent: "Lead Finder",      color: "#0A66C2", text: "Found Twitter account for lead: @sarahl_vp",                 time: "09:42:20", status: "done" },
+  { agent: "Twitter Manager",  color: "#D97706", text: "Tweet received 23 impressions in 2 min",                     time: "09:42:28", status: "done" },
+  { agent: "Reddit Scout",     color: "#FF4500", text: "Signal: 'Our manual outreach takes 20 hrs/week'",            time: "09:42:35", status: "done" },
+  { agent: "Community Finder", color: "#059669", text: "Ranked 6 communities by ICP density — top: SaaS Growth",     time: "09:42:40", status: "done" },
+  { agent: "Twitter Manager",  color: "#D97706", text: "Engaging with @saasfounder's thread on outbound",            time: "09:42:48", status: "done" },
+  { agent: "Lead Finder",      color: "#0A66C2", text: "Drafting personalized outreach for top 4 leads…",            time: "09:42:55", status: "in_progress" },
+  { agent: "Reddit Scout",     color: "#FF4500", text: "3 new signal posts matched on r/startups",                   time: "09:43:02", status: "done" },
+  { agent: "Twitter Manager",  color: "#D97706", text: "Liked 4 posts from ICP-matching accounts",                   time: "09:43:10", status: "done" },
+  { agent: "Community Finder", color: "#059669", text: "Discovered 2 new Discord servers for GTM founders",          time: "09:43:18", status: "done" },
+  { agent: "Lead Finder",      color: "#0A66C2", text: "Lead score update: 12 qualified out of 18",                  time: "09:43:25", status: "done" },
+  { agent: "Reddit Scout",     color: "#FF4500", text: "Signal: 'Wish there was an AI to handle GTM'",               time: "09:43:33", status: "done" },
+  { agent: "Twitter Manager",  color: "#D97706", text: "Tweet #2 draft ready for review · ⏳ awaiting approval",     time: "09:43:40", status: "done" },
+  { agent: "Lead Finder",      color: "#0A66C2", text: "Outreach draft sent — 4 messages ready · ⏳ approval",       time: "09:43:48", status: "done" },
+  { agent: "Community Finder", color: "#059669", text: "Community report ready — 9 groups, 14K total members",       time: "09:43:55", status: "done" },
+];
+
+function LandingLiveActivity() {
+  const [lines, setLines] = useState<LandingLogLine[]>(() =>
+    LANDING_SEED.map((l, i) => ({ ...l, id: i }))
+  );
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const streamIdx = useRef(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (streamIdx.current >= LANDING_STREAM.length) {
+        streamIdx.current = 0;
+      }
+      const next = LANDING_STREAM[streamIdx.current];
+      streamIdx.current++;
+      setLines(prev => [...prev, { ...next, id: prev.length }]);
+    }, 2400 + Math.random() * 1200);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [lines.length]);
+
+  return (
+    <div style={{
+      background: "#fafaf8",
+      border: `1px solid ${T.border}`,
+      borderRadius: 12,
+      overflow: "hidden",
+      boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
+      display: "flex",
+      flexDirection: "column",
+      height: "100%",
+    }}>
+      {/* Title bar */}
+      <div style={{ padding: "9px 14px", background: "#e8e5de", display: "flex", alignItems: "center", gap: 6 }}>
+        {["#FF6057","#FFBD2E","#28CA41"].map(c => (
+          <span key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "inline-block" }} />
+        ))}
+        <span style={{ marginLeft: 8, fontSize: 11, color: T.textDim, fontFamily: T.mono, flex: 1 }}>getu.ai — agent activity</span>
+        <span style={{ width: 7, height: 7, borderRadius: "50%", background: T.green, display: "inline-block", animation: "pulse 2s infinite" }} />
+        <span style={{ fontSize: 10, fontFamily: T.mono, color: T.green }}>live</span>
+      </div>
+
+      {/* Agent status bar */}
+      <div style={{ display: "flex", borderBottom: `1px solid ${T.border}`, background: "#fff" }}>
+        {LANDING_AGENTS.map((a, i) => (
+          <div key={a.name} style={{
+            flex: 1, padding: "8px 10px",
+            borderRight: i < LANDING_AGENTS.length - 1 ? `1px solid ${T.border}` : "none",
+            display: "flex", alignItems: "center", gap: 7,
+          }}>
+            <div style={{
+              width: 22, height: 22, borderRadius: 5,
+              background: `${a.color}14`, border: `1px solid ${a.color}30`,
+              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+            }}>
+              <span style={{ fontFamily: T.mono, fontSize: 8, fontWeight: 700, color: a.color }}>{a.initials}</span>
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ fontSize: 10, fontWeight: 500, color: T.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.name}</div>
+              <div style={{ fontSize: 9, fontFamily: T.mono, color: a.color }}>{a.stat}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Log lines */}
+      <div style={{ flex: 1, overflowY: "auto", padding: "6px 0" }}>
+        {lines.map((line) => (
+          <div key={line.id} style={{
+            padding: "5px 14px", fontSize: 11, lineHeight: 1.5,
+            animation: "slideIn .2s ease",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span style={{ fontFamily: T.mono, fontSize: 9, color: T.textDim }}>{line.time}</span>
+              <span style={{
+                fontFamily: T.mono, fontSize: 9, fontWeight: 600, color: line.color,
+                background: `${line.color}10`, padding: "1px 5px", borderRadius: 3,
+              }}>{line.agent}</span>
+            </div>
+            <div style={{ color: line.status === "in_progress" ? T.text : T.textMid, marginTop: 1, fontSize: 11.5 }}>
+              {line.text}
+              {line.status === "in_progress" && <span style={{ display: "inline-block", width: 2, height: 11, background: T.green, marginLeft: 3, verticalAlign: "-1px", animation: "blink 1s infinite" }} />}
+            </div>
+          </div>
+        ))}
+        <div ref={bottomRef} />
+      </div>
+    </div>
+  );
+}
+
+// ── Demo Terminal (preserved — not currently rendered) ─────────────────────────
 
 interface LineData {
   role: StepRole;
