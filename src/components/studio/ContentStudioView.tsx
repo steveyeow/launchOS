@@ -159,7 +159,9 @@ function loadState(): PersistedState | null {
   try {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return null;
-    return JSON.parse(raw) as PersistedState;
+    const parsed = JSON.parse(raw) as PersistedState;
+    if (!parsed.contentPieces || parsed.contentPieces.length === 0) return null;
+    return parsed;
   } catch { return null; }
 }
 
