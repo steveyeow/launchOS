@@ -46,7 +46,7 @@ export default function LandingPage({ onGetStarted, onSignIn }: Props) {
             <span style={{ color: T.green }}>ready to deploy.</span>
           </h1>
           <p style={{ fontSize: 15, lineHeight: 1.75, color: T.textMid, marginBottom: 26, maxWidth: 420 }}>
-            Describe your product. ARIA learns your goals, maps your ICP, builds the strategy, and deploys specialist agents that find leads, publish content, run outreach — all on autopilot.
+            Describe your product. GetU.ai learns your goals, maps your ICP, builds the strategy, and deploys specialist agents that find leads, publish content, run outreach — all on autopilot.
           </p>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
             <button onClick={onGetStarted} style={{ background: T.text, color: "#fff", border: "none", padding: "11px 22px", borderRadius: 8, fontSize: 14, fontWeight: 500, cursor: "pointer" }}>
