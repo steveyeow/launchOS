@@ -1,15 +1,15 @@
 // Design tokens — warm beige palette matching the product prototype
 export const T = {
   // Backgrounds
-  bg:          "#f4f2ed",
+  bg:          "#f8f7f4",
   surface:     "#ffffff",
-  surfaceHov:  "#eeece7",
-  sidebarHov:  "#eceae4",
-  sidebarAct:  "#dedad2",
+  surfaceHov:  "#f2f0ec",
+  sidebarHov:  "#f0eee9",
+  sidebarAct:  "#e5e2db",
 
   // Borders
-  border:      "#e4e1d8",
-  borderMid:   "#ccc9c0",
+  border:      "#e9e6df",
+  borderMid:   "#d4d1c9",
 
   // Text
   text:        "#1a1714",
@@ -34,8 +34,10 @@ export const GLOBAL_STYLES = `
   body { font-family: ${T.sans}; background: ${T.bg}; color: ${T.text}; }
   button { font-family: inherit; cursor: pointer; }
   button:focus, input:focus, textarea:focus { outline: none; }
-  ::-webkit-scrollbar { width: 3px; }
-  ::-webkit-scrollbar-thumb { background: #4a4540; border-radius: 2px; }
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.22); }
   @keyframes fadeUp  { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
   @keyframes slideIn { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: none; } }
   @keyframes pulse   { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }

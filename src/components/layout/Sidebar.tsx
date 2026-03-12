@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { T } from "../../lib/theme.js";
-import { supabase } from "../../lib/supabase.js";
 import type { Task, Conversation } from "../../../shared/types.js";
 
 export type SidebarTab = "chat" | "missions" | "skills" | "agents";
@@ -14,36 +13,66 @@ interface Props {
   activeConvId?:          string;
   onNewChat:              () => void;
   onSelectConversation:   (id: string) => void;
+  collapsed:              boolean;
+  onToggleCollapse:       () => void;
 }
 
 export default function Sidebar({
   activeTab, onTabChange, tasks, userEmail,
   conversations, activeConvId, onNewChat, onSelectConversation,
+  collapsed, onToggleCollapse,
 }: Props) {
-  const [hovSignOut, setHovSignOut] = useState(false);
-
   const runningCount = tasks.filter(t => t.status === "running").length;
 
   return (
     <aside style={{
-      width:         220,
+      width:         collapsed ? 54 : 220,
       flexShrink:    0,
       background:    T.bg,
       borderRight:   `1px solid ${T.border}`,
       display:       "flex",
       flexDirection: "column",
       height:        "100%",
+      transition:    "width .2s ease",
+      overflow:      "hidden",
     }}>
-      {/* Logo */}
-      <div style={{ padding: "16px 18px 12px", borderBottom: `1px solid ${T.border}` }}>
-        <span style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 500, color: T.text }}>
-          getu<span style={{ color: T.green }}>.ai</span>
-        </span>
+      {/* Logo + collapse toggle */}
+      <div style={{
+        padding: collapsed ? "16px 0 12px" : "16px 18px 12px",
+        borderBottom: `1px solid ${T.border}`,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: collapsed ? "center" : "space-between",
+        minHeight: 47,
+      }}>
+        {collapsed ? (
+          <button
+            onClick={onToggleCollapse}
+            title="Expand sidebar"
+            style={{
+              background: "none", border: "none", cursor: "pointer",
+              padding: 4, display: "flex", alignItems: "center",
+            }}
+          >
+            <span style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 500, color: T.text }}>g<span style={{ color: T.green }}>.</span></span>
+          </button>
+        ) : (
+          <>
+            <span style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 500, color: T.text, whiteSpace: "nowrap" }}>
+              getu<span style={{ color: T.green }}>.ai</span>
+            </span>
+            <CollapseButton onClick={onToggleCollapse} />
+          </>
+        )}
       </div>
 
       {/* New Chat button */}
-      <div style={{ padding: "10px 8px 6px" }}>
-        <NewChatButton onClick={onNewChat} />
+      <div style={{ padding: collapsed ? "10px 8px 6px" : "10px 8px 6px" }}>
+        {collapsed ? (
+          <CollapsedNewChatButton onClick={onNewChat} />
+        ) : (
+          <NewChatButton onClick={onNewChat} />
+        )}
       </div>
 
       {/* Nav */}
@@ -54,13 +83,14 @@ export default function Sidebar({
           active={activeTab === "missions"}
           onClick={() => onTabChange("missions")}
           badge={runningCount > 0 ? runningCount : undefined}
+          collapsed={collapsed}
         />
-        <NavItem icon={<AgentsIcon />}  label="Agents"         active={activeTab === "agents"}   onClick={() => onTabChange("agents")} />
-        <NavItem icon={<SkillsIcon />}  label="Skills"         active={activeTab === "skills"}   onClick={() => onTabChange("skills")} />
+        <NavItem icon={<AgentsIcon />} label="Agents" active={activeTab === "agents"} onClick={() => onTabChange("agents")} collapsed={collapsed} />
+        <NavItem icon={<SkillsIcon />} label="Skills" active={activeTab === "skills"} onClick={() => onTabChange("skills")} collapsed={collapsed} />
       </nav>
 
-      {/* Conversation history */}
-      {conversations.length > 0 && (
+      {/* Conversation history — hidden when collapsed */}
+      {!collapsed && conversations.length > 0 && (
         <div style={{ flex: 1, overflowY: "auto", padding: "10px 8px 4px" }}>
           <div style={{ fontSize: 10, color: T.textDim, fontFamily: T.mono, letterSpacing: 0.5, padding: "2px 10px 6px", textTransform: "uppercase" }}>
             Recent chats
@@ -77,47 +107,62 @@ export default function Sidebar({
           </div>
         </div>
       )}
-      {conversations.length === 0 && <div style={{ flex: 1 }} />}
+      {(collapsed || conversations.length === 0) && <div style={{ flex: 1 }} />}
 
       {/* Running indicator */}
       {runningCount > 0 && (
-        <div style={{ margin: "0 8px 8px", padding: "8px 10px", background: T.greenLight, border: `1px solid ${T.greenMid}`, borderRadius: 8 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, display: "inline-block", animation: "pulse 2s infinite" }} />
-            <span style={{ fontSize: 11, color: T.green, fontFamily: T.mono }}>
-              {runningCount} agent{runningCount > 1 ? "s" : ""} running
-            </span>
+        collapsed ? (
+          <div style={{ margin: "0 auto 8px", width: 6, height: 6, borderRadius: "50%", background: T.green, animation: "pulse 2s infinite" }} title={`${runningCount} agent${runningCount > 1 ? "s" : ""} running`} />
+        ) : (
+          <div style={{ margin: "0 8px 8px", padding: "8px 10px", background: T.greenLight, border: `1px solid ${T.greenMid}`, borderRadius: 8 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <span style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, display: "inline-block", animation: "pulse 2s infinite" }} />
+              <span style={{ fontSize: 11, color: T.green, fontFamily: T.mono }}>
+                {runningCount} agent{runningCount > 1 ? "s" : ""} running
+              </span>
+            </div>
           </div>
-        </div>
+        )
       )}
 
-      {/* User + sign out */}
-      <div style={{ padding: "10px 12px", borderTop: `1px solid ${T.border}` }}>
-        <div style={{ fontSize: 11, color: T.textDim, marginBottom: 6, fontFamily: T.mono, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-          {userEmail}
-        </div>
-        <button
-          onClick={() => supabase.auth.signOut()}
-          onMouseEnter={() => setHovSignOut(true)}
-          onMouseLeave={() => setHovSignOut(false)}
-          style={{
-            background:   "none",
-            border:       `1px solid ${T.border}`,
-            borderRadius: 6,
-            padding:      "5px 10px",
-            fontSize:     11,
-            color:        hovSignOut ? T.text : T.textDim,
-            fontFamily:   T.mono,
-            width:        "100%",
-            textAlign:    "left",
-            transition:   "color .1s",
-            cursor:       "pointer",
-          }}
-        >
-          Sign out
-        </button>
+      {/* User info */}
+      <div style={{ padding: collapsed ? "10px 0" : "10px 12px", borderTop: `1px solid ${T.border}`, display: "flex", justifyContent: "center" }}>
+        {collapsed ? (
+          <span title={userEmail} style={{ width: 24, height: 24, borderRadius: "50%", background: T.sidebarAct, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: T.textMid, fontFamily: T.mono }}>
+            {userEmail.charAt(0).toUpperCase()}
+          </span>
+        ) : (
+          <div style={{ fontSize: 11, color: T.textDim, fontFamily: T.mono, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%" }}>
+            {userEmail}
+          </div>
+        )}
       </div>
     </aside>
+  );
+}
+
+// ── Collapse Button ───────────────────────────────────────────────────────────
+
+function CollapseButton({ onClick }: { onClick: () => void }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      title="Collapse sidebar"
+      style={{
+        background: "none", border: "none", cursor: "pointer",
+        padding: 4, display: "flex", alignItems: "center", justifyContent: "center",
+        borderRadius: 4,
+        color: hov ? T.text : T.textDim,
+        transition: "color .15s",
+      }}
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M9 3L5 7l4 4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    </button>
   );
 }
 
@@ -147,7 +192,35 @@ function NewChatButton({ onClick }: { onClick: () => void }) {
       }}
     >
       <span style={{ fontSize: 16, lineHeight: 1, color: T.textMid }}>+</span>
-      New chat
+      New mission
+    </button>
+  );
+}
+
+function CollapsedNewChatButton({ onClick }: { onClick: () => void }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      title="New mission"
+      style={{
+        display:      "flex",
+        alignItems:   "center",
+        justifyContent: "center",
+        width:        "100%",
+        padding:      "7px 0",
+        background:   hov ? T.sidebarHov : "transparent",
+        border:       `1px solid ${hov ? T.borderMid : T.border}`,
+        borderRadius: 7,
+        fontSize:     16,
+        color:        T.textMid,
+        cursor:       "pointer",
+        transition:   "background .1s, border-color .1s",
+      }}
+    >
+      +
     </button>
   );
 }
@@ -188,42 +261,53 @@ function ConvItem({ conv, active, onClick }: { conv: Conversation; active: boole
 // ── Nav Item ──────────────────────────────────────────────────────────────────
 
 interface NavItemProps {
-  icon:    React.ReactNode;
-  label:   string;
-  active:  boolean;
-  onClick: () => void;
-  badge?:  number;
+  icon:       React.ReactNode;
+  label:      string;
+  active:     boolean;
+  onClick:    () => void;
+  badge?:     number;
+  collapsed?: boolean;
 }
 
-function NavItem({ icon, label, active, onClick, badge }: NavItemProps) {
+function NavItem({ icon, label, active, onClick, badge, collapsed }: NavItemProps) {
   const [hov, setHov] = useState(false);
   return (
     <button
       onClick={onClick}
       onMouseEnter={() => setHov(true)}
       onMouseLeave={() => setHov(false)}
+      title={collapsed ? label : undefined}
       style={{
-        display:      "flex",
-        alignItems:   "center",
-        gap:          8,
-        padding:      "8px 10px",
-        borderRadius: 7,
-        background:   active ? T.sidebarAct : hov ? T.sidebarHov : "transparent",
-        border:       "none",
-        color:        active ? T.text : T.textMid,
-        fontSize:     13,
-        fontWeight:   active ? 500 : 400,
-        width:        "100%",
-        textAlign:    "left",
-        cursor:       "pointer",
+        display:        "flex",
+        alignItems:     "center",
+        justifyContent: collapsed ? "center" : "flex-start",
+        gap:            collapsed ? 0 : 8,
+        padding:        collapsed ? "8px 0" : "8px 10px",
+        borderRadius:   7,
+        background:     active ? T.sidebarAct : hov ? T.sidebarHov : "transparent",
+        border:         "none",
+        color:          active ? T.text : T.textMid,
+        fontSize:       13,
+        fontWeight:     active ? 500 : 400,
+        width:          "100%",
+        textAlign:      "left",
+        cursor:         "pointer",
+        position:       "relative",
       }}
     >
       <span style={{ opacity: active ? 1 : 0.6, flexShrink: 0 }}>{icon}</span>
-      <span style={{ flex: 1 }}>{label}</span>
-      {badge !== undefined && (
+      {!collapsed && <span style={{ flex: 1 }}>{label}</span>}
+      {!collapsed && badge !== undefined && (
         <span style={{ background: T.green, color: "#fff", borderRadius: 100, fontSize: 10, padding: "1px 6px", fontFamily: T.mono }}>
           {badge}
         </span>
+      )}
+      {collapsed && badge !== undefined && (
+        <span style={{
+          position: "absolute", top: 2, right: 4,
+          width: 8, height: 8, borderRadius: "50%",
+          background: T.green,
+        }} />
       )}
     </button>
   );

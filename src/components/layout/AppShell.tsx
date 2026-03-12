@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Sidebar, { type SidebarTab } from "./Sidebar.js";
 import AriaChat from "../chat/AriaChat.js";
+import ContentStudioView from "../studio/ContentStudioView.js";
 import MissionCenter from "../tasks/MissionCenter.js";
 import SkillsPage from "../skills/SkillsPage.js";
 import AgentsPage from "../agents/AgentsPage.js";
@@ -21,7 +22,8 @@ export default function AppShell({ user }: Props) {
   const [conversations, setConversations]   = useState<Conversation[]>([]);
   const [initialPrompt, setInitialPrompt]   = useState<string | undefined>();
   const [activeChatAgent, setActiveChatAgent]         = useState<string | null>(null);
-  const [activeChatAgentInfo, setActiveChatAgentInfo] = useState<Pick<AgentInfo, "name" | "color" | "tagline" | "starter"> | null>(null);
+  const [activeChatAgentInfo, setActiveChatAgentInfo] = useState<{ name: string; color: string; tagline: string; starter: string } | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed]       = useState(false);
   const { tasks } = useTasks(user.id);
 
   const loadConversations = useCallback(async () => {
@@ -64,20 +66,27 @@ export default function AppShell({ user }: Props) {
     setTab("chat");
   }
 
-  function handleChatWithAgent(agent: AgentInfo) {
+  function handleChatWithAgent(agent: AgentInfo | { name: string; color: string; tagline: string; starter: string }) {
     setActiveChatAgent(agent.name);
     setActiveChatAgentInfo({ name: agent.name, color: agent.color, tagline: agent.tagline, starter: agent.starter });
     setActiveConvId(undefined);
-    setInitialPrompt(agent.starter || undefined); // pre-fill composer with agent's starter prompt
-    setChatKey(k => k + 1); // force remount for agent chat
+    setInitialPrompt(agent.starter || undefined);
+    setChatKey(k => k + 1);
     setTab("chat");
   }
 
   function handleSelectConversation(id: string) {
     setActiveConvId(id);
-    // Do NOT remount (no chatKey++) — same chat view just loads the selected conversation.
-    // This keeps any in-flight stream for the previous conv running; when it completes the
-    // server saves the reply, so when user switches back they see the full response.
+    setTab("chat");
+  }
+
+  function handleOpenMissionConversation(conversationId: string, agentName: string, agentColor: string) {
+    const info = { name: agentName, color: agentColor, tagline: "", starter: "" };
+    setActiveChatAgent(agentName);
+    setActiveChatAgentInfo(info);
+    setActiveConvId(conversationId);
+    setInitialPrompt(undefined);
+    setChatKey(k => k + 1);
     setTab("chat");
   }
 
@@ -92,9 +101,17 @@ export default function AppShell({ user }: Props) {
         activeConvId={activeConvId}
         onNewChat={handleNewChat}
         onSelectConversation={handleSelectConversation}
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(c => !c)}
       />
       <main style={{ flex: 1, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-        {tab === "chat" && (
+        {tab === "chat" && activeChatAgent === "Content Studio" ? (
+          <ContentStudioView
+            key={chatKey}
+            onNavigate={setTab}
+            userName={user.email ?? ""}
+          />
+        ) : tab === "chat" ? (
           <AriaChat
             key={chatKey}
             onNavigate={setTab}
@@ -105,9 +122,10 @@ export default function AppShell({ user }: Props) {
             userName={user.email ?? ""}
             agentName={activeChatAgent ?? undefined}
             agentInfo={activeChatAgentInfo ?? undefined}
+            onChatWithAgent={handleChatWithAgent}
           />
-        )}
-        {tab === "missions" && <MissionCenter userId={user.id} onChat={() => setTab("chat")} />}
+        ) : null}
+        {tab === "missions" && <MissionCenter userId={user.id} onChat={() => setTab("chat")} onNavigate={setTab} onOpenConversation={handleOpenMissionConversation} onChatWithAgent={handleChatWithAgent} />}
         {tab === "skills"   && <SkillsPage onChat={handleSkillChat} />}
         {tab === "agents"   && <AgentsPage onNavigate={setTab} onChatWithAgent={handleChatWithAgent} />}
       </main>

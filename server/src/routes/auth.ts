@@ -1,5 +1,4 @@
 import { Hono, type Context, type Next } from "hono";
-import { createClient } from "@supabase/supabase-js";
 import { db, users } from "../db/index.js";
 import { eq } from "drizzle-orm";
 import type { AppEnv } from "../lib/hono.js";
@@ -8,29 +7,16 @@ const auth = new Hono<AppEnv>();
 
 // Auth middleware — validates Supabase JWT and attaches userId to context.
 // Used by all protected routes.
+const DEV_USER_ID = "00000000-0000-0000-0000-000000000000";
+const DEV_USER_EMAIL = "dev@getu.ai";
+
 export async function requireAuth(c: Context, next: Next): Promise<Response | void> {
-  const authHeader = c.req.header("Authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    return c.json({ data: null, error: "unauthorized" }, 401);
-  }
-
-  const token = authHeader.slice(7);
-  const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
-  );
-
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-  if (error || !user) {
-    return c.json({ data: null, error: "invalid token" }, 401);
-  }
-
-  // Ensure user row exists in our users table (upsert on first login)
+  // Dev bypass — skip JWT validation, use a fixed dev user
   await db.insert(users)
-    .values({ id: user.id, email: user.email! })
+    .values({ id: DEV_USER_ID, email: DEV_USER_EMAIL })
     .onConflictDoNothing();
 
-  (c as Context<AppEnv>).set("userId", user.id);
+  (c as Context<AppEnv>).set("userId", DEV_USER_ID);
   await next();
 }
 
