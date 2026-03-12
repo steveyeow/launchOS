@@ -292,7 +292,7 @@ function ActionPanel({ approvals, onApprove, onDismiss }: {
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
         <div style={{
           width: 20, height: 20, borderRadius: 6,
-          background: "#FEF3C7", border: "1px solid #FDE68A",
+          background: "rgba(217,119,6,0.12)", border: "1px solid rgba(217,119,6,0.25)",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontSize: 11, lineHeight: 1,
         }}>
@@ -303,9 +303,9 @@ function ActionPanel({ approvals, onApprove, onDismiss }: {
         </span>
         <span style={{
           fontSize: 10, fontFamily: T.mono, fontWeight: 600,
-          color: "#D97706", background: "#FEF3C7",
+          color: "#D97706", background: "rgba(217,119,6,0.12)",
           borderRadius: 100, padding: "2px 8px",
-          border: "1px solid #FDE68A",
+          border: "1px solid rgba(217,119,6,0.25)",
         }}>
           {approvals.length}
         </span>
@@ -380,9 +380,9 @@ function ApprovalCard({ item, expanded, onToggle, onApprove, onDismiss }: {
         {/* Type badge */}
         <span style={{
           fontSize: 9, fontFamily: T.mono, fontWeight: 500,
-          color: "#D97706", background: "#FEF3C7",
+          color: "#D97706", background: "rgba(217,119,6,0.12)",
           borderRadius: 4, padding: "2px 7px",
-          border: "1px solid #FDE68A",
+          border: "1px solid rgba(217,119,6,0.25)",
           flexShrink: 0, textTransform: "uppercase", letterSpacing: "0.03em",
         }}>
           {meta.label}
@@ -425,12 +425,12 @@ function ApprovalCard({ item, expanded, onToggle, onApprove, onDismiss }: {
                 padding: "7px 16px", borderRadius: 7,
                 border: "none",
                 background: approveHov ? T.green : T.text,
-                color: "#fff",
+                color: T.bg,
                 fontSize: 11, fontFamily: T.mono, fontWeight: 500,
                 cursor: "pointer", transition: "all .15s",
               }}
             >
-              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8.5l3.5 3.5L13 5" /></svg>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke={T.bg} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8.5l3.5 3.5L13 5" /></svg>
               Approve
             </button>
             <button
@@ -490,11 +490,11 @@ function NewMissionButton({ onSelectAgent }: { onSelectAgent: (agent: typeof AVA
     <div ref={ref} style={{ position: "relative" }}>
       <button
         onClick={() => setOpen(!open)}
-        style={{ background: T.text, color: "#fff", border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 12, fontFamily: T.mono, fontWeight: 500, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+        style={{ background: T.text, color: T.bg, border: "none", borderRadius: 8, padding: "8px 16px", fontSize: 12, fontFamily: T.mono, fontWeight: 500, cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
       >
         + New Mission
         <svg width="10" height="10" viewBox="0 0 10 10" fill="none" style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform .15s" }}>
-          <path d="M2 3.5l3 3 3-3" stroke="#fff" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M2 3.5l3 3 3-3" stroke={T.bg} strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
 
@@ -502,7 +502,7 @@ function NewMissionButton({ onSelectAgent }: { onSelectAgent: (agent: typeof AVA
         <div style={{
           position: "absolute", top: "calc(100% + 6px)", right: 0,
           background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12)", padding: 6,
+          boxShadow: T.shadow, padding: 6,
           minWidth: 280, zIndex: 100, animation: "fadeUp .15s ease",
         }}>
           <div style={{ padding: "6px 10px 8px", fontSize: 10, fontFamily: T.mono, color: T.textDim, textTransform: "uppercase", letterSpacing: "0.04em" }}>
@@ -619,9 +619,9 @@ function MissionCard({ mission, status, onTogglePause, onStop, onOpen }: {
   const badge = isRunning
     ? { label: "Running", color: T.green, bg: T.greenLight, border: T.greenMid, pulse: true }
     : isPaused
-    ? { label: "Paused", color: "#D97706", bg: "#FEF3C7", border: "#FDE68A", pulse: false }
+    ? { label: "Paused", color: "#D97706", bg: "rgba(217,119,6,0.12)", border: "rgba(217,119,6,0.25)", pulse: false }
     : status === "failed"
-    ? { label: "Failed", color: "#DC2626", bg: "#FEE2E2", border: "#FECACA", pulse: false }
+    ? { label: "Failed", color: "#DC2626", bg: "rgba(220,38,38,0.12)", border: "rgba(220,38,38,0.25)", pulse: false }
     : { label: "Completed", color: T.textDim, bg: T.bg, border: T.border, pulse: false };
 
   return (

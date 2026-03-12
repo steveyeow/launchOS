@@ -13,7 +13,7 @@ interface TeamAgent {
 const MY_TEAM: TeamAgent[] = [
   {
     name:         "ARIA",
-    color:        "#1a1714",
+    color:        "#a78bfa",
     activity:     "Coordinating your GTM strategy & managing all agents",
     platform:     "All platforms",
     platformIcon: "all",
@@ -65,7 +65,7 @@ export const AGENTS = [
   {
     name:       "ARIA",
     tagline:    "Your strategic GTM advisor — discusses strategy, coordinates agents, and keeps everything aligned",
-    color:      "#1a1714",
+    color:      "#a78bfa",
     status:     "active" as const,
     caps:       ["GTM strategy", "Agent coordination", "Market analysis", "Campaign planning"],
     platforms:  ["All platforms"],
@@ -191,7 +191,7 @@ export default function AgentsPage({ onNavigate, onChatWithAgent }: Props) {
           onClick={() => setShowCreate(true)}
           style={{
             flexShrink: 0, display: "flex", alignItems: "center", gap: 6,
-            background: T.text, color: "#fff", border: "none", borderRadius: 8,
+            background: T.text, color: T.bg, border: "none", borderRadius: 8,
             padding: "9px 16px", fontSize: 12, fontWeight: 500, fontFamily: T.mono,
             cursor: "pointer", transition: "opacity .15s",
           }}
@@ -282,18 +282,18 @@ function TeamCard({ agent, onNewMission }: { agent: TeamAgent; onNewMission: (a:
         Working
       </span>
 
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <AgentAvatar initials={initials} color={agent.color} size={40} />
         <div>
           <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{agent.name}</div>
           <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
-            <PlatformIcon type={agent.platformIcon} color={T.textDim} />
-            <span style={{ fontSize: 10, color: T.textDim }}>{agent.platform}</span>
+            <PlatformIcon type={agent.platformIcon} color={T.textMid} />
+            <span style={{ fontSize: 10, color: T.textMid }}>{agent.platform}</span>
           </div>
         </div>
       </div>
 
-      <div style={{ background: `${agent.color}08`, border: `1px solid ${agent.color}18`, borderRadius: 8, padding: "10px 12px" }}>
+      <div style={{ background: `${agent.color}10`, border: `1px solid ${agent.color}22`, borderRadius: 8, padding: "10px 12px" }}>
         <div style={{ fontSize: 10, fontFamily: T.mono, color: agent.color, fontWeight: 500, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.04em" }}>Current Task</div>
         <div style={{ fontSize: 12, color: T.text, lineHeight: 1.5 }}>{agent.activity}</div>
       </div>
@@ -302,7 +302,7 @@ function TeamCard({ agent, onNewMission }: { agent: TeamAgent; onNewMission: (a:
         {agent.stats.map(s => (
           <div key={s.label} style={{ flex: 1 }}>
             <div style={{ fontSize: 16, fontWeight: 600, color: T.text, fontFamily: T.mono }}>{s.value}</div>
-            <div style={{ fontSize: 10, color: T.textDim, marginTop: 1 }}>{s.label}</div>
+            <div style={{ fontSize: 10, color: T.textMid, marginTop: 1 }}>{s.label}</div>
           </div>
         ))}
       </div>
@@ -313,10 +313,11 @@ function TeamCard({ agent, onNewMission }: { agent: TeamAgent; onNewMission: (a:
         onMouseLeave={() => setBtnHov(false)}
         style={{
           display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
-          padding: "9px 16px", background: btnHov ? agent.color : `${agent.color}12`,
+          padding: "9px 16px", background: btnHov ? agent.color : `${agent.color}1a`,
           color: btnHov ? "#fff" : agent.color,
-          border: "none", borderRadius: 8, fontSize: 12, fontWeight: 500, fontFamily: T.mono,
-          cursor: "pointer", transition: "background .15s, color .15s",
+          border: `1px solid ${btnHov ? agent.color : agent.color + "30"}`,
+          borderRadius: 8, fontSize: 12, fontWeight: 500, fontFamily: T.mono,
+          cursor: "pointer", transition: "background .15s, color .15s, border-color .15s",
         }}
       >
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
@@ -340,25 +341,26 @@ function HireCard({ agent, onChat }: { agent: AgentInfo; onChat: (a: AgentInfo) 
       transition: "border-color .15s ease", position: "relative", opacity: isSoon ? 0.7 : 1,
     }}>
       {isSoon && (
-        <span style={{ position: "absolute", top: 12, right: 12, fontSize: 10, fontFamily: T.mono, fontWeight: 500, color: T.textDim, background: T.bg, borderRadius: 100, padding: "3px 10px", border: `1px solid ${T.border}` }}>Coming Soon</span>
+        <span style={{ position: "absolute", top: 12, right: 12, fontSize: 10, fontFamily: T.mono, fontWeight: 500, color: T.textMid, background: T.bg, borderRadius: 100, padding: "3px 10px", border: `1px solid ${T.border}` }}>Coming Soon</span>
       )}
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <AgentAvatar initials={initials} color={agent.color} size={40} />
         <div>
           <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{agent.name}</div>
-          <div style={{ fontSize: 10, color: T.textDim, marginTop: 2 }}>{agent.platforms.join(", ")}</div>
+          <div style={{ fontSize: 10, color: T.textMid, marginTop: 2 }}>{agent.platforms.join(", ")}</div>
         </div>
       </div>
       <p style={{ fontSize: 12, color: T.textMid, lineHeight: 1.6, margin: 0, flex: 1 }}>{agent.tagline}</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-        {agent.caps.slice(0, 3).map(c => <span key={c} style={{ fontSize: 10, color: agent.color, background: `${agent.color}14`, borderRadius: 5, padding: "3px 8px", fontFamily: T.mono }}>{c}</span>)}
+        {agent.caps.slice(0, 3).map(c => <span key={c} style={{ fontSize: 10, color: agent.color, background: `${agent.color}1a`, borderRadius: 5, padding: "3px 8px", fontFamily: T.mono }}>{c}</span>)}
       </div>
       <button onClick={() => !isSoon && onChat(agent)} style={{
         display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
-        padding: "9px 16px", background: isSoon ? T.border : (hov ? agent.color : `${agent.color}12`),
-        color: isSoon ? T.textDim : (hov ? "#fff" : agent.color),
-        border: "none", borderRadius: 8, fontSize: 12, fontWeight: 500, fontFamily: T.mono,
-        cursor: isSoon ? "default" : "pointer", transition: "background .15s, color .15s",
+        padding: "9px 16px", background: isSoon ? T.border : (hov ? agent.color : `${agent.color}1a`),
+        color: isSoon ? T.textMid : (hov ? "#fff" : agent.color),
+        border: `1px solid ${isSoon ? T.border : (hov ? agent.color : agent.color + "30")}`,
+        borderRadius: 8, fontSize: 12, fontWeight: 500, fontFamily: T.mono,
+        cursor: isSoon ? "default" : "pointer", transition: "background .15s, color .15s, border-color .15s",
       }}>
         {isSoon ? "Coming Soon" : "Hire this Agent"}
       </button>
@@ -375,13 +377,14 @@ function AgentAvatar({ initials, color, size }: { initials: string; color: strin
 }
 
 function PlatformIcon({ type, color }: { type: TeamAgent["platformIcon"]; color: string }) {
-  const s = { width: 11, height: 11 };
-  if (type === "twitter") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l11.7 16h4.3M4 20l6.8-9.2M20.6 4h-4.3L11 10" /></svg>;
-  if (type === "linkedin") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></svg>;
-  if (type === "reddit") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="14" r="8" /><path d="M12 6V2M16 2l-4 4-4-4" /><circle cx="8.5" cy="13" r="1" fill={color} /><circle cx="15.5" cy="13" r="1" fill={color} /><path d="M9 17c1.5 1 4.5 1 6 0" /></svg>;
-  if (type === "communities") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>;
-  if (type === "all") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z" /></svg>;
-  return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>;
+  const s = { width: 11, height: 11, style: { color } as React.CSSProperties };
+  const st = "currentColor";
+  if (type === "twitter") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={st} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4l11.7 16h4.3M4 20l6.8-9.2M20.6 4h-4.3L11 10" /></svg>;
+  if (type === "linkedin") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={st} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-4 0v7h-4v-7a6 6 0 016-6z" /><rect x="2" y="9" width="4" height="12" /><circle cx="4" cy="4" r="2" /></svg>;
+  if (type === "reddit") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={st} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="14" r="8" /><path d="M12 6V2M16 2l-4 4-4-4" /><circle cx="8.5" cy="13" r="1" fill={st} /><circle cx="15.5" cy="13" r="1" fill={st} /><path d="M9 17c1.5 1 4.5 1 6 0" /></svg>;
+  if (type === "communities") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={st} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" /></svg>;
+  if (type === "all") return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={st} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><path d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10A15.3 15.3 0 0112 2z" /></svg>;
+  return <svg {...s} viewBox="0 0 24 24" fill="none" stroke={st} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>;
 }
 
 
@@ -408,19 +411,20 @@ function CustomAgentCard({ agent, onChat }: { agent: CustomAgent; onChat: () => 
         <AgentAvatar initials={initials} color={agent.color} size={40} />
         <div>
           <div style={{ fontSize: 14, fontWeight: 600, color: T.text }}>{agent.name}</div>
-          <div style={{ fontSize: 10, color: T.textDim, marginTop: 2 }}>{agent.platforms.join(", ")}</div>
+          <div style={{ fontSize: 10, color: T.textMid, marginTop: 2 }}>{agent.platforms.join(", ")}</div>
         </div>
       </div>
       <p style={{ fontSize: 12, color: T.textMid, lineHeight: 1.6, margin: 0, flex: 1 }}>{agent.tagline}</p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-        {agent.caps.slice(0, 3).map(c => <span key={c} style={{ fontSize: 10, color: agent.color, background: `${agent.color}14`, borderRadius: 5, padding: "3px 8px", fontFamily: T.mono }}>{c}</span>)}
+        {agent.caps.slice(0, 3).map(c => <span key={c} style={{ fontSize: 10, color: agent.color, background: `${agent.color}1a`, borderRadius: 5, padding: "3px 8px", fontFamily: T.mono }}>{c}</span>)}
       </div>
       <button onClick={onChat} style={{
         display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6,
-        padding: "9px 16px", background: hov ? agent.color : `${agent.color}12`,
+        padding: "9px 16px", background: hov ? agent.color : `${agent.color}1a`,
         color: hov ? "#fff" : agent.color,
-        border: "none", borderRadius: 8, fontSize: 12, fontWeight: 500, fontFamily: T.mono,
-        cursor: "pointer", transition: "background .15s, color .15s",
+        border: `1px solid ${hov ? agent.color : agent.color + "30"}`,
+        borderRadius: 8, fontSize: 12, fontWeight: 500, fontFamily: T.mono,
+        cursor: "pointer", transition: "background .15s, color .15s, border-color .15s",
       }}>
         Chat with Agent
       </button>
@@ -678,7 +682,7 @@ function CreateAgentModal({ onClose, onSave }: { onClose: () => void; onSave: (a
             disabled={!canAdvance()}
             style={{
               background: !canAdvance() ? T.textDim : color,
-              color: "#fff", border: "none", borderRadius: 8,
+              color: T.bg, border: "none", borderRadius: 8,
               padding: "9px 20px", fontSize: 12, fontWeight: 600,
               fontFamily: T.mono, cursor: !canAdvance() ? "default" : "pointer",
               opacity: !canAdvance() ? 0.5 : 1,

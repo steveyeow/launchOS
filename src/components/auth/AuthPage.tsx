@@ -128,7 +128,7 @@ const card: React.CSSProperties = {
   display:       "flex",
   flexDirection: "column",
   gap:           18,
-  boxShadow:     "0 4px 24px rgba(0,0,0,0.06)",
+  boxShadow:     "0 4px 24px var(--t-shadow, rgba(0,0,0,0.06))",
 };
 
 const inputStyle: React.CSSProperties = {
@@ -143,7 +143,7 @@ const inputStyle: React.CSSProperties = {
 
 const primaryBtn: React.CSSProperties = {
   background:   T.text,
-  color:        "#fff",
+  color:        T.bg,
   border:       "none",
   borderRadius: 8,
   padding:      "11px 0",

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { T } from "../../lib/theme.js";
+import { T, useTheme } from "../../lib/theme.js";
 import type { Task, Conversation } from "../../../shared/types.js";
 
 export type SidebarTab = "chat" | "missions" | "skills" | "agents";
@@ -47,7 +47,7 @@ export default function Sidebar({
       }}>
         {collapsed ? (
           <button
-            onClick={onToggleCollapse}
+            onClick={() => { onToggleCollapse(); onTabChange("chat"); }}
             title="Expand sidebar"
             style={{
               background: "none", border: "none", cursor: "pointer",
@@ -58,9 +58,17 @@ export default function Sidebar({
           </button>
         ) : (
           <>
-            <span style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 500, color: T.text, whiteSpace: "nowrap" }}>
-              getu<span style={{ color: T.green }}>.ai</span>
-            </span>
+            <button
+              onClick={() => onTabChange("chat")}
+              style={{
+                background: "none", border: "none", cursor: "pointer",
+                padding: 0, display: "flex", alignItems: "center",
+              }}
+            >
+              <span style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 500, color: T.text, whiteSpace: "nowrap" }}>
+                getu<span style={{ color: T.green }}>.ai</span>
+              </span>
+            </button>
             <CollapseButton onClick={onToggleCollapse} />
           </>
         )}
@@ -143,16 +151,17 @@ export default function Sidebar({
         )
       )}
 
-      {/* User info */}
-      <div style={{ padding: collapsed ? "10px 0" : "10px 12px", borderTop: `1px solid ${T.border}`, display: "flex", justifyContent: "center" }}>
+      {/* User info + theme toggle */}
+      <div style={{ padding: collapsed ? "10px 0" : "10px 12px", borderTop: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: collapsed ? "center" : "space-between", gap: 6 }}>
         {collapsed ? (
-          <span title={userEmail} style={{ width: 24, height: 24, borderRadius: "50%", background: T.sidebarAct, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: T.textMid, fontFamily: T.mono }}>
-            {userEmail.charAt(0).toUpperCase()}
-          </span>
+          <ThemeToggleBtn />
         ) : (
-          <div style={{ fontSize: 11, color: T.textDim, fontFamily: T.mono, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", width: "100%" }}>
-            {userEmail}
-          </div>
+          <>
+            <div style={{ fontSize: 11, color: T.textDim, fontFamily: T.mono, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, minWidth: 0 }}>
+              {userEmail}
+            </div>
+            <ThemeToggleBtn />
+          </>
         )}
       </div>
     </aside>
@@ -316,7 +325,7 @@ function NavItem({ icon, label, active, onClick, badge, collapsed }: NavItemProp
       <span style={{ opacity: active ? 1 : 0.6, flexShrink: 0 }}>{icon}</span>
       {!collapsed && <span style={{ flex: 1 }}>{label}</span>}
       {!collapsed && badge !== undefined && (
-        <span style={{ background: T.green, color: "#fff", borderRadius: 100, fontSize: 10, padding: "1px 6px", fontFamily: T.mono }}>
+        <span style={{ background: T.green, color: T.bg, borderRadius: 100, fontSize: 10, padding: "1px 6px", fontFamily: T.mono }}>
           {badge}
         </span>
       )}
@@ -404,3 +413,36 @@ const AgentsIcon = () => (
     <path d="M2 13c0-2.761 2.462-5 5.5-5s5.5 2.239 5.5 5" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
   </svg>
 );
+
+function ThemeToggleBtn() {
+  const { mode, toggle } = useTheme();
+  const [hov, setHov] = useState(false);
+  const isDark = mode === "dark";
+  return (
+    <button
+      onClick={toggle}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      title={`Switch to ${isDark ? "light" : "dark"} mode`}
+      style={{
+        background: "none", border: "none", cursor: "pointer",
+        padding: 4, display: "flex", alignItems: "center", justifyContent: "center",
+        borderRadius: 4, color: hov ? T.text : T.textDim, transition: "color .15s",
+        flexShrink: 0,
+      }}
+    >
+      {isDark ? (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      )}
+    </button>
+  );
+}

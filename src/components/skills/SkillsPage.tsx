@@ -11,7 +11,7 @@ const AGENT_COLOR: Record<string, string> = {
   "GEO Optimizer":    "#0891B2",
   "SEO Writer":       "#7C3AED",
   "Ad Manager":       "#DC2626",
-  "ARIA":             "#1a1714",
+  "ARIA":             "#a78bfa",
 };
 
 
@@ -204,7 +204,7 @@ export default function SkillsPage({ onChat }: { onChat: (prompt?: string) => vo
           </div>
           <button
             onClick={() => setShowCreate(true)}
-            style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 5, background: T.text, color: "#fff", border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500, cursor: "pointer", marginTop: 2 }}
+            style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 5, background: T.text, color: T.bg, border: "none", borderRadius: 8, padding: "8px 14px", fontSize: 12, fontWeight: 500, cursor: "pointer", marginTop: 2 }}
           >
             <span style={{ fontSize: 16, lineHeight: 1 }}>+</span> Create skill
           </button>
@@ -300,7 +300,7 @@ function SkillCard({ skill, expanded, onToggle, onChat, soon, custom }: { skill:
 
           <button
             onClick={onChat}
-            style={{ alignSelf: "flex-start", background: T.text, color: "#fff", border: "none", borderRadius: 7, padding: "7px 14px", fontSize: 12, fontWeight: 500, cursor: "pointer" }}
+            style={{ alignSelf: "flex-start", background: T.text, color: T.bg, border: "none", borderRadius: 7, padding: "7px 14px", fontSize: 12, fontWeight: 500, cursor: "pointer" }}
           >
             Ask ARIA to run this →
           </button>
@@ -410,7 +410,7 @@ function CreateSkillModal({ onClose, onSave }: { onClose: () => void; onSave: (s
           <button
             onClick={handleSave}
             disabled={!name.trim() || !description.trim()}
-            style={{ background: !name.trim() || !description.trim() ? T.textDim : T.text, color: "#fff", border: "none", borderRadius: 7, padding: "8px 16px", fontSize: 12, fontWeight: 500, cursor: !name.trim() || !description.trim() ? "default" : "pointer", opacity: !name.trim() || !description.trim() ? 0.5 : 1 }}
+            style={{ background: !name.trim() || !description.trim() ? T.textDim : T.text, color: T.bg, border: "none", borderRadius: 7, padding: "8px 16px", fontSize: 12, fontWeight: 500, cursor: !name.trim() || !description.trim() ? "default" : "pointer", opacity: !name.trim() || !description.trim() ? 0.5 : 1 }}
           >
             Create skill
           </button>

@@ -56,7 +56,7 @@ export default function Dashboard({ tasks, onChat }: Props) {
             <div style={{ width: 28, height: 28, borderRadius: 7, background: T.surface, border: `1px solid ${T.greenMid}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: T.mono, fontSize: 10, color: T.green, flexShrink: 0 }}>A</div>
             <div>
               <div style={{ fontSize: 11, fontWeight: 600, color: T.green, marginBottom: 3, fontFamily: T.mono }}>LATEST RESULT</div>
-              <div style={{ fontSize: 13, color: "#166534", lineHeight: 1.65 }}>
+              <div style={{ fontSize: 13, color: T.text, lineHeight: 1.65 }}>
                 <strong>{latestResult.agentName}</strong>: {latestResult.resultSummary ?? latestResult.title}
               </div>
             </div>
@@ -66,7 +66,7 @@ export default function Dashboard({ tasks, onChat }: Props) {
             <p style={{ fontSize: 14, color: T.textMid, marginBottom: 12 }}>No missions running yet. Chat with ARIA to get started.</p>
             <button
               onClick={onChat}
-              style={{ background: T.text, color: "#fff", border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 13, cursor: "pointer" }}
+              style={{ background: T.text, color: T.bg, border: "none", borderRadius: 8, padding: "9px 18px", fontSize: 13, cursor: "pointer" }}
             >
               Chat with ARIA →
             </button>

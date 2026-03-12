@@ -516,7 +516,7 @@ export default function AriaChat({ onNavigate, initialPrompt, onInitialPromptCon
                 <div style={{ width: 40, height: 40, borderRadius: 40 * 0.28, background: `${agentInfo.color}18`, border: `1.5px solid ${agentInfo.color}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <span style={{ fontFamily: T.mono, fontSize: 14, fontWeight: 600, color: agentInfo.color }}>{initials}</span>
                 </div>
-                <h2 style={{ fontSize: 28, fontWeight: 300, fontFamily: T.serif, color: "#333", letterSpacing: "-0.01em", lineHeight: 1.3, margin: 0 }}>
+                <h2 style={{ fontSize: 28, fontWeight: 400, fontFamily: T.serif, color: T.text, letterSpacing: "-0.01em", lineHeight: 1.3, margin: 0 }}>
                   {agentInfo.name}
                 </h2>
               </div>
@@ -554,7 +554,7 @@ export default function AriaChat({ onNavigate, initialPrompt, onInitialPromptCon
             <div style={{ textAlign: "center", marginBottom: 28 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, justifyContent: "center", marginBottom: 12 }}>
                 <PixelBot />
-                <h2 style={{ fontSize: 32, fontWeight: 300, fontFamily: T.serifDisplay, color: "#3D3929", letterSpacing: "-0.015em", lineHeight: 1.25, margin: 0 }}>
+                <h2 style={{ fontSize: 32, fontWeight: 400, fontFamily: T.serifDisplay, color: T.text, letterSpacing: "-0.015em", lineHeight: 1.25, margin: 0 }}>
                   {greeting()}, {firstName}
                 </h2>
               </div>
@@ -620,7 +620,7 @@ function MessageBubble({ message, agentInfo, onViewMissions, onSubmitAnswers }: 
       {!isUser && avatarEl}
       <div style={{ maxWidth: "80%", display: "flex", flexDirection: "column", gap: 6, alignItems: isUser ? "flex-end" : "flex-start" }}>
         {!isUser && <span style={{ fontSize: 10, color: agentInfo ? agentInfo.color : T.green, fontFamily: T.mono, letterSpacing: .5 }}>{nameLabel}</span>}
-        <div style={{ background: isUser ? T.text : T.surface, color: isUser ? "#fff" : T.text, border: isUser ? "none" : `1px solid ${T.border}`, borderRadius: isUser ? "12px 12px 4px 12px" : "4px 12px 12px 12px", padding: "10px 14px", fontSize: 14 }}>
+        <div style={{ background: isUser ? T.text : T.surface, color: isUser ? T.bg : T.text, border: isUser ? "none" : `1px solid ${T.border}`, borderRadius: isUser ? "12px 12px 4px 12px" : "4px 12px 12px 12px", padding: "10px 14px", fontSize: 14 }}>
           {isUser ? <span style={{ whiteSpace: "pre-wrap", lineHeight: 1.7 }}>{message.content}</span> : renderMarkdown(message.content)}
         </div>
         {message.questions && onSubmitAnswers && <QuestionCard questions={message.questions} agentColor={agentInfo?.color} onSubmitAnswers={onSubmitAnswers} />}
@@ -724,7 +724,7 @@ function TaskCreatedCard({ task, onViewMissions }: { task: TaskCard; onViewMissi
   const badge = isRunning
     ? { label: "Running", color: T.green, bg: `${T.green}14`, border: `${T.green}30`, pulse: true }
     : isPaused
-    ? { label: "Paused", color: "#D97706", bg: "#FEF3C7", border: "#FDE68A", pulse: false }
+    ? { label: "Paused", color: "#D97706", bg: "rgba(217,119,6,0.12)", border: "rgba(217,119,6,0.25)", pulse: false }
     : { label: "Stopped", color: T.textDim, bg: T.bg, border: T.border, pulse: false };
 
   if (isStopped) {
@@ -805,7 +805,7 @@ function inlineFormat(text: string): React.ReactNode[] {
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) return <strong key={i} style={{ fontWeight: 600 }}>{part.slice(2, -2)}</strong>;
     if (part.startsWith("*") && part.endsWith("*")) return <em key={i}>{part.slice(1, -1)}</em>;
-    if (part.startsWith("`") && part.endsWith("`")) return <code key={i} style={{ fontFamily: T.mono, fontSize: 12, background: "rgba(0,0,0,0.07)", padding: "1px 4px", borderRadius: 3 }}>{part.slice(1, -1)}</code>;
+    if (part.startsWith("`") && part.endsWith("`")) return <code key={i} style={{ fontFamily: T.mono, fontSize: 12, background: T.codeBg, padding: "1px 4px", borderRadius: 3 }}>{part.slice(1, -1)}</code>;
     return part;
   });
 }
@@ -848,11 +848,11 @@ interface InputBoxProps {
 
 const InputBox = forwardRef<HTMLTextAreaElement, InputBoxProps>(
   ({ value, onChange, onKeyDown, onSubmit, streaming, large, placeholder = "Message ARIA..." }, ref) => (
-    <div style={{ display: "flex", alignItems: "flex-end", gap: 8, background: T.surface, border: `1px solid ${T.border}`, borderRadius: large ? 16 : 12, padding: large ? "14px 16px" : "10px 12px", boxShadow: large ? "0 4px 24px rgba(0,0,0,0.07)" : "0 2px 8px rgba(0,0,0,0.04)" }}>
+    <div style={{ display: "flex", alignItems: "flex-end", gap: 8, background: T.surface, border: `1px solid ${T.border}`, borderRadius: large ? 16 : 12, padding: large ? "14px 16px" : "10px 12px", boxShadow: large ? "0 4px 24px var(--t-shadow, rgba(0,0,0,0.07))" : "0 2px 8px var(--t-shadow, rgba(0,0,0,0.04))" }}>
       <textarea ref={ref} value={value} onChange={onChange} onKeyDown={onKeyDown} placeholder={placeholder} rows={large ? 3 : 1}
         style={{ flex: 1, border: "none", background: "transparent", fontSize: large ? 15 : 14, color: T.text, fontFamily: T.sans, resize: "none", lineHeight: 1.65, outline: "none", minHeight: large ? 72 : undefined }} />
       <button onClick={onSubmit} disabled={streaming || !value.trim()}
-        style={{ background: value.trim() && !streaming ? T.text : T.border, color: value.trim() && !streaming ? "#fff" : T.textDim, border: "none", borderRadius: large ? 10 : 8, width: large ? 38 : 32, height: large ? 38 : 32, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background .15s", cursor: value.trim() && !streaming ? "pointer" : "default" }}>
+        style={{ background: value.trim() && !streaming ? T.text : T.border, color: value.trim() && !streaming ? T.bg : T.textDim, border: "none", borderRadius: large ? 10 : 8, width: large ? 38 : 32, height: large ? 38 : 32, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background .15s", cursor: value.trim() && !streaming ? "pointer" : "default" }}>
         {streaming ? <Spinner /> : <SendIcon />}
       </button>
     </div>
@@ -911,7 +911,7 @@ function ModelSelector({ selected, onChange }: { selected: string; onChange: (id
         <div style={{
           position: "absolute", bottom: "calc(100% + 6px)", left: 0,
           background: T.surface, border: `1px solid ${T.border}`, borderRadius: 10,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.12)", padding: "6px",
+          boxShadow: "0 8px 32px var(--t-shadow, rgba(0,0,0,0.12))", padding: "6px",
           minWidth: 260, zIndex: 100, animation: "fadeUp .15s ease",
         }}>
           {MODELS.map(model => {
@@ -992,15 +992,16 @@ function QuickActionCard({ action, onRun }: { action: QuickAction; onRun: () => 
 }
 
 function PixelBot() {
-  const S = 4; const c = T.textDim; const g = T.green; const _ = null;
+  const S = 4; const c = "c"; const g = "g"; const _ = null;
   const grid: (string | null)[][] = [
     [_,_,_,_,c,c,_,_,_,_],[_,_,_,_,c,_,_,_,_,_],[_,c,c,c,c,c,c,c,c,_],[_,c,_,_,_,_,_,_,c,_],
     [_,c,_,g,g,g,g,_,c,_],[_,c,_,g,_,_,g,_,c,_],[_,c,_,g,g,g,g,_,c,_],[_,c,_,_,_,_,_,_,c,_],
     [_,c,c,c,c,c,c,c,c,_],[_,_,c,c,_,_,c,c,_,_],
   ];
   return (
-    <svg width={10*S} height={10*S} viewBox={`0 0 ${10*S} ${10*S}`} style={{ imageRendering: "pixelated", flexShrink: 0 }}>
-      {grid.map((row, r) => row.map((fill, col) => fill ? <rect key={`${r}-${col}`} x={col*S} y={r*S} width={S} height={S} fill={fill} /> : null))}
+    <svg width={10*S} height={10*S} viewBox={`0 0 ${10*S} ${10*S}`} style={{ imageRendering: "pixelated", flexShrink: 0, color: T.textDim }}>
+      <style>{`.pb-c { fill: currentColor } .pb-g { fill: var(--t-green) }`}</style>
+      {grid.map((row, r) => row.map((cell, col) => cell ? <rect key={`${r}-${col}`} x={col*S} y={r*S} width={S} height={S} className={cell === "c" ? "pb-c" : "pb-g"} /> : null))}
     </svg>
   );
 }
@@ -1189,7 +1190,7 @@ function QuestionCard({ questions, agentColor, onSubmitAnswers }: { questions: A
               style={{
                 width: "100%", border: `1px solid ${isCustomSelected ? color + "40" : T.border}`,
                 borderRadius: 6, padding: "6px 8px", fontSize: 12, color: T.text,
-                background: isCustomSelected ? "#fff" : T.bg, outline: "none",
+                background: isCustomSelected ? T.surface : T.bg, outline: "none",
                 fontFamily: T.sans, transition: "border-color .12s",
               }}
             />
@@ -1220,8 +1221,8 @@ function QuestionCard({ questions, agentColor, onSubmitAnswers }: { questions: A
 function BrowserSetupCard({ platform }: { platform: string }) {
   const [installHov, setInstallHov] = useState(false);
   return (
-    <div style={{ background: "#FFFBEB", border: "1px solid #F59E0B25", borderRadius: 10, padding: "12px 14px", width: "100%", display: "flex", alignItems: "center", gap: 10 }}>
-      <div style={{ width: 32, height: 32, borderRadius: 8, background: "#FEF3C7", border: "1px solid #F59E0B30", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+    <div style={{ background: "rgba(217,119,6,0.08)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: 10, padding: "12px 14px", width: "100%", display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(217,119,6,0.12)", border: "1px solid rgba(245,158,11,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <rect x="1" y="2" width="14" height="11" rx="2" stroke="#D97706" strokeWidth="1.3" />
           <path d="M1 5h14" stroke="#D97706" strokeWidth="1.3" />
@@ -1230,8 +1231,8 @@ function BrowserSetupCard({ platform }: { platform: string }) {
         </svg>
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: "#92400E" }}>Browser extension needed for {platform}</div>
-        <div style={{ fontSize: 11, color: "#A16207", marginTop: 2 }}>Install it to let me interact with the platform on your behalf.</div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: "#D97706" }}>Browser extension needed for {platform}</div>
+        <div style={{ fontSize: 11, color: T.textMid, marginTop: 2 }}>Install it to let me interact with the platform on your behalf.</div>
       </div>
       <button
         onClick={() => {/* TODO: open extension install page */}}

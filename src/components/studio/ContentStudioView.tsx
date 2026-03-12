@@ -287,7 +287,7 @@ export default function ContentStudioView({ onNavigate, userName }: Props) {
               <div style={{ width: 44, height: 44, borderRadius: 12, background: `${CS_COLOR}14`, border: `1.5px solid ${CS_COLOR}40`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <span style={{ fontFamily: T.mono, fontSize: 15, fontWeight: 600, color: CS_COLOR }}>CS</span>
               </div>
-              <h2 style={{ fontSize: 28, fontWeight: 300, fontFamily: T.serif, color: "#333", letterSpacing: "-0.01em", margin: 0 }}>Content Studio</h2>
+              <h2 style={{ fontSize: 28, fontWeight: 400, fontFamily: T.serif, color: T.text, letterSpacing: "-0.01em", margin: 0 }}>Content Studio</h2>
             </div>
             <p style={{ textAlign: "center", fontSize: 13, color: T.textMid, marginBottom: 6, lineHeight: 1.6 }}>
               Creates images, copy, and short-form videos for TikTok and social media publishing.
@@ -438,7 +438,7 @@ function CSMessage({ message }: { message: ChatMessage }) {
       <div style={{ maxWidth: "85%", display: "flex", flexDirection: "column", gap: 4, alignItems: isUser ? "flex-end" : "flex-start" }}>
         {!isUser && <span style={{ fontSize: 10, color: CS_COLOR, fontFamily: T.mono, letterSpacing: .5 }}>Content Studio</span>}
         <div style={{
-          background: isUser ? T.text : T.surface, color: isUser ? "#fff" : T.text,
+          background: isUser ? T.text : T.surface, color: isUser ? T.bg : T.text,
           border: isUser ? "none" : `1px solid ${T.border}`,
           borderRadius: isUser ? "12px 12px 4px 12px" : "4px 12px 12px 12px",
           padding: "10px 14px", fontSize: 13, lineHeight: 1.65,
@@ -527,7 +527,7 @@ function ContentTab({ pieces, onApprove, onApproveAll, onEdit, allApproved, pend
             <button style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 6, fontSize: 11, fontFamily: T.mono, background: "transparent", border: `1px solid ${T.border}`, color: T.textMid, cursor: "pointer" }}>
               Request Changes
             </button>
-            <button onClick={onApproveAll} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 6, fontSize: 11, fontFamily: T.mono, background: T.green, border: "none", color: "#fff", cursor: "pointer" }}>
+              <button onClick={onApproveAll} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 6, fontSize: 11, fontFamily: T.mono, background: T.green, border: "none", color: T.bg, cursor: "pointer" }}>
               ✓ Approve & Schedule All
             </button>
           </>
@@ -665,7 +665,7 @@ function ContentCard({ piece, onApprove, onEdit }: { piece: ContentPiece; onAppr
             </>
           ) : (
             <>
-              <button onClick={onApprove} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 6, fontSize: 11, fontFamily: T.mono, fontWeight: 500, background: T.green, border: "none", color: "#fff", cursor: "pointer" }}>✓ Approve</button>
+              <button onClick={onApprove} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 6, fontSize: 11, fontFamily: T.mono, fontWeight: 500, background: T.green, border: "none", color: T.bg, cursor: "pointer" }}>✓ Approve</button>
               <button onClick={onEdit} style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 6, fontSize: 11, fontFamily: T.mono, fontWeight: 500, background: "transparent", border: `1px solid ${T.border}`, color: T.textMid, cursor: "pointer" }}>✎ Edit</button>
               <button style={{ display: "flex", alignItems: "center", gap: 4, padding: "6px 12px", borderRadius: 6, fontSize: 11, fontFamily: T.mono, fontWeight: 500, background: "transparent", border: "none", color: T.textMid, cursor: "pointer" }}>↻ Regenerate</button>
               <div style={{ flex: 1 }} />
@@ -687,7 +687,7 @@ function EditOverlay({ piece, onClose, onSave }: { piece: ContentPiece; onClose:
   const [hashtags] = useState(piece.hashtags);
 
   return (
-    <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: 460, background: T.surface, borderLeft: `1px solid ${T.border}`, boxShadow: "-8px 0 32px rgba(0,0,0,0.08)", zIndex: 200, display: "flex", flexDirection: "column", animation: "slideIn .25s ease" }}>
+    <div style={{ position: "fixed", top: 0, right: 0, bottom: 0, width: 460, background: T.surface, borderLeft: `1px solid ${T.border}`, boxShadow: `-8px 0 32px ${T.shadow}`, zIndex: 200, display: "flex", flexDirection: "column", animation: "slideIn .25s ease" }}>
       <div style={{ padding: "16px 20px", borderBottom: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <h3 style={{ fontSize: 14, fontWeight: 600 }}>Edit Content</h3>
         <button onClick={onClose} style={{ background: "transparent", border: "none", fontSize: 18, color: T.textDim, cursor: "pointer", padding: 4 }}>×</button>
@@ -724,7 +724,7 @@ function EditOverlay({ piece, onClose, onSave }: { piece: ContentPiece; onClose:
       <div style={{ padding: "14px 20px", borderTop: `1px solid ${T.border}`, display: "flex", gap: 8, justifyContent: "flex-end" }}>
         <button onClick={onClose} style={{ padding: "7px 14px", borderRadius: 7, fontSize: 12, fontFamily: T.mono, background: "transparent", border: "none", color: T.textMid, cursor: "pointer" }}>Cancel</button>
         <button style={{ padding: "7px 14px", borderRadius: 7, fontSize: 12, fontFamily: T.mono, background: "transparent", border: `1px solid ${T.border}`, color: T.textMid, cursor: "pointer" }}>Ask CS to refine</button>
-        <button onClick={() => onSave({ ...piece, hook, script, caption })} style={{ padding: "7px 14px", borderRadius: 7, fontSize: 12, fontFamily: T.mono, background: CS_COLOR, border: "none", color: "#fff", cursor: "pointer" }}>Save Changes</button>
+        <button onClick={() => onSave({ ...piece, hook, script, caption })} style={{ padding: "7px 14px", borderRadius: 7, fontSize: 12, fontFamily: T.mono, background: CS_COLOR, border: "none", color: T.bg, cursor: "pointer" }}>Save Changes</button>
       </div>
     </div>
   );
@@ -884,11 +884,11 @@ interface CSInputBoxProps {
 
 const CSInputBox = forwardRef<HTMLTextAreaElement, CSInputBoxProps>(
   ({ value, onChange, onKeyDown, onSubmit, streaming, large, placeholder = "Message Content Studio…" }, ref) => (
-    <div style={{ display: "flex", alignItems: "flex-end", gap: 8, background: T.surface, border: `1px solid ${T.border}`, borderRadius: large ? 16 : 10, padding: large ? "14px 16px" : "8px 10px", boxShadow: large ? "0 4px 24px rgba(0,0,0,0.07)" : "0 1px 4px rgba(0,0,0,0.03)" }}>
+    <div style={{ display: "flex", alignItems: "flex-end", gap: 8, background: T.surface, border: `1px solid ${T.border}`, borderRadius: large ? 16 : 10, padding: large ? "14px 16px" : "8px 10px", boxShadow: large ? `0 4px 24px ${T.shadow}` : `0 1px 4px ${T.shadow}` }}>
       <textarea ref={ref} value={value} onChange={onChange} onKeyDown={onKeyDown} placeholder={placeholder} rows={large ? 3 : 1}
         style={{ flex: 1, border: "none", background: "transparent", fontSize: large ? 15 : 13, color: T.text, fontFamily: T.sans, resize: "none", lineHeight: 1.6, outline: "none", minHeight: large ? 72 : undefined }} />
       <button onClick={onSubmit} disabled={streaming || !value.trim()}
-        style={{ background: value.trim() && !streaming ? T.text : T.border, color: value.trim() && !streaming ? "#fff" : T.textDim, border: "none", borderRadius: large ? 10 : 7, width: large ? 38 : 28, height: large ? 38 : 28, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background .15s", cursor: value.trim() && !streaming ? "pointer" : "default" }}>
+        style={{ background: value.trim() && !streaming ? T.text : T.border, color: value.trim() && !streaming ? T.bg : T.textDim, border: "none", borderRadius: large ? 10 : 7, width: large ? 38 : 28, height: large ? 38 : 28, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "background .15s", cursor: value.trim() && !streaming ? "pointer" : "default" }}>
         {streaming ? <span style={{ width: 12, height: 12, border: "2px solid #fff4", borderTopColor: "#fff", borderRadius: "50%", display: "inline-block", animation: "spin .6s linear infinite" }} /> : <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M12 7L2 2l2.5 5L2 12l10-5z" fill="currentColor" /></svg>}
       </button>
     </div>
@@ -928,7 +928,7 @@ function inlineFmt(text: string): React.ReactNode[] {
   return parts.map((part, i) => {
     if (part.startsWith("**") && part.endsWith("**")) return <strong key={i} style={{ fontWeight: 600 }}>{part.slice(2, -2)}</strong>;
     if (part.startsWith("*") && part.endsWith("*")) return <em key={i}>{part.slice(1, -1)}</em>;
-    if (part.startsWith("`") && part.endsWith("`")) return <code key={i} style={{ fontFamily: T.mono, fontSize: 11, background: "rgba(0,0,0,0.07)", padding: "1px 4px", borderRadius: 3 }}>{part.slice(1, -1)}</code>;
+    if (part.startsWith("`") && part.endsWith("`")) return <code key={i} style={{ fontFamily: T.mono, fontSize: 11, background: T.codeBg, padding: "1px 4px", borderRadius: 3 }}>{part.slice(1, -1)}</code>;
     return part;
   });
 }

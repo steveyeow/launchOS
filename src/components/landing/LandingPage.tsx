@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { T } from "../../lib/theme.js";
+import { T, useTheme } from "../../lib/theme.js";
 
 interface Props {
   onGetStarted: () => void;
@@ -202,6 +202,7 @@ const DEMO_SCRIPTS = [DEMO_OVERVIEW, DEMO_TWITTER];
 const LOOP_PAUSE_MS = 3500;
 
 export default function LandingPage({ onGetStarted }: Props) {
+  const { mode, toggle } = useTheme();
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column", background: T.bg, overflow: "hidden" }}>
       {/* Nav */}
@@ -209,9 +210,12 @@ export default function LandingPage({ onGetStarted }: Props) {
         <span style={{ fontFamily: T.mono, fontSize: 14, fontWeight: 500, color: T.text }}>
           getu<span style={{ color: T.green }}>.ai</span>
         </span>
-        <button onClick={onGetStarted} style={{ background: T.text, color: "#fff", border: "none", padding: "7px 18px", borderRadius: 7, fontSize: 14, fontWeight: 500, cursor: "pointer" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <ThemeToggle mode={mode} onToggle={toggle} />
+          <button onClick={onGetStarted} style={{ background: T.text, color: T.bg, border: "none", padding: "7px 18px", borderRadius: 7, fontSize: 14, fontWeight: 500, cursor: "pointer" }}>
             Get started →
           </button>
+        </div>
       </nav>
 
       {/* Hero */}
@@ -223,14 +227,14 @@ export default function LandingPage({ onGetStarted }: Props) {
             <span style={{ fontSize: 11, color: T.green, fontFamily: T.mono }}>open beta</span>
           </div>
           <h1 style={{ fontFamily: T.serifDisplay, fontSize: 34, lineHeight: 1.2, color: T.text, marginBottom: 14, fontWeight: 500 }}>
-            Your GTM Agents,<br />
+            Your GTM Agents,<br/>
             <span style={{ color: T.green }}>get your first 100 users love you.</span>
           </h1>
           <p style={{ fontSize: 14, lineHeight: 1.7, color: T.textMid, marginBottom: 22, maxWidth: 380 }}>
             Describe your product. GetU deploys agents that find signal posts and engage, discover ICP-matching leads, join relevant communities, create and publish content, optimize GEO & SEO — and more, all on autopilot.
           </p>
           <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-            <button onClick={onGetStarted} style={{ background: T.text, color: "#fff", border: "none", padding: "11px 22px", borderRadius: 8, fontSize: 14, fontWeight: 500, cursor: "pointer" }}>
+            <button onClick={onGetStarted} style={{ background: T.text, color: T.bg, border: "none", padding: "11px 22px", borderRadius: 8, fontSize: 14, fontWeight: 500, cursor: "pointer" }}>
               Create your sandbox →
             </button>
             <span style={{ fontSize: 12, color: T.textDim, fontFamily: T.mono }}>no setup needed</span>
@@ -250,7 +254,7 @@ export default function LandingPage({ onGetStarted }: Props) {
 
       {/* Footer */}
       <footer style={{ padding: "14px 48px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <p style={{ fontSize: 13, color: T.textDim, fontFamily: T.serifDisplay, fontStyle: "italic", fontWeight: 300, margin: 0 }}>
+        <p style={{ fontSize: 13, color: T.textMid, fontFamily: T.serifDisplay, fontStyle: "italic", fontWeight: 400, margin: 0 }}>
           "It's better to have 100 users love you than 1 million kinda like you."
           <span style={{ fontStyle: "normal", marginLeft: 8, fontFamily: T.mono, fontSize: 11 }}>— Paul Graham</span>
         </p>
@@ -341,11 +345,11 @@ function LandingLiveActivity() {
 
   return (
     <div style={{
-      background: "#fafaf8",
+      background: T.surface,
       border: `1px solid ${T.border}`,
       borderRadius: 12,
       overflow: "hidden",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
+      boxShadow: `0 4px 20px var(--t-shadow, rgba(0,0,0,0.07))`,
       display: "flex",
       flexDirection: "column",
       height: "100%",
@@ -446,17 +450,17 @@ function DemoTerminal() {
 
   return (
     <div style={{
-      background: "#fafaf8",
+      background: T.surface,
       border: `1px solid ${T.border}`,
       borderRadius: 12,
       overflow: "hidden",
-      boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
+      boxShadow: `0 4px 20px var(--t-shadow, rgba(0,0,0,0.07))`,
       display: "flex",
       flexDirection: "column",
       height: "100%",
     }}>
       {/* Title bar */}
-      <div style={{ padding: "9px 14px", background: "#e8e5de", display: "flex", alignItems: "center", gap: 6 }}>
+      <div style={{ padding: "9px 14px", background: T.sidebarAct, display: "flex", alignItems: "center", gap: 6 }}>
         {["#FF6057","#FFBD2E","#28CA41"].map(c => (
           <span key={c} style={{ width: 10, height: 10, borderRadius: "50%", background: c, display: "inline-block" }} />
         ))}
@@ -509,12 +513,12 @@ function DemoTerminal() {
 
 const AGENT_COLORS: Record<AgentName, { color: string; bg: string; border: string }> = {
   "ARIA":             { color: T.green,    bg: T.greenLight, border: T.greenMid },
-  "getu.ai":          { color: T.text,     bg: "#f0eee9",    border: T.borderMid },
-  "Twitter Manager":  { color: "#D97706",  bg: "#fffbeb",    border: "#fcd34d"  },
-  "Reddit Scout":     { color: "#FF4500",  bg: "#fff7ed",    border: "#fdba74"  },
-  "Lead Finder":      { color: "#0A66C2",  bg: "#eff6ff",    border: "#93c5fd"  },
-  "Community Finder": { color: "#059669",  bg: "#ecfdf5",    border: "#6ee7b7"  },
-  "Content Studio":   { color: "#E11D48",  bg: "#fff1f2",    border: "#fda4af"  },
+  "getu.ai":          { color: T.text,     bg: T.sidebarHov, border: T.borderMid },
+  "Twitter Manager":  { color: "#D97706",  bg: "rgba(217,119,6,0.08)",  border: "rgba(217,119,6,0.25)"  },
+  "Reddit Scout":     { color: "#FF4500",  bg: "rgba(255,69,0,0.08)",   border: "rgba(255,69,0,0.25)"   },
+  "Lead Finder":      { color: "#0A66C2",  bg: "rgba(10,102,194,0.08)", border: "rgba(10,102,194,0.25)" },
+  "Community Finder": { color: "#059669",  bg: "rgba(5,150,105,0.08)",  border: "rgba(5,150,105,0.25)"  },
+  "Content Studio":   { color: "#E11D48",  bg: "rgba(225,29,72,0.08)",  border: "rgba(225,29,72,0.25)"  },
 };
 
 // ── Bubble Components ─────────────────────────────────────────────────────────
@@ -569,7 +573,7 @@ function CardBubble({ line, isLive, onDone }: { line: LineData; isLive: boolean;
     }}>
       <div style={{
         padding: "5px 10px",
-        background: "#f0eee9",
+        background: T.sidebarHov,
         fontSize: 10,
         fontFamily: T.mono,
         fontWeight: 500,
@@ -595,14 +599,14 @@ function CardBubble({ line, isLive, onDone }: { line: LineData; isLive: boolean;
 function PlanBubble({ line, isLive, onDone }: { line: LineData; isLive: boolean; onDone: () => void }) {
   return (
     <div style={{
-      border: `1px solid #c4b5fd`,
+      border: `1px solid rgba(124,58,237,0.25)`,
       borderRadius: 8,
       overflow: "hidden",
-      background: "#f5f3ff",
+      background: "rgba(124,58,237,0.06)",
     }}>
       <div style={{
         padding: "5px 10px",
-        background: "#ede9fe",
+        background: "rgba(124,58,237,0.10)",
         fontSize: 10,
         fontFamily: T.mono,
         fontWeight: 500,
@@ -696,6 +700,45 @@ function Typewriter({ text, speed = 14, onDone }: TypewriterProps) {
 }
 
 // ── TypewriterList — reveals items one by one ─────────────────────────────────
+
+// ── Theme Toggle ──────────────────────────────────────────────────────────────
+
+function ThemeToggle({ mode, onToggle }: { mode: string; onToggle: () => void }) {
+  const [hov, setHov] = useState(false);
+  const isDark = mode === "dark";
+  return (
+    <button
+      onClick={onToggle}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      style={{
+        background: hov ? T.sidebarHov : "transparent",
+        border: `1px solid ${hov ? T.borderMid : "transparent"}`,
+        borderRadius: 8,
+        width: 34,
+        height: 34,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        transition: "all .15s",
+        color: T.textMid,
+      }}
+    >
+      {isDark ? (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="5" />
+          <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+        </svg>
+      ) : (
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+        </svg>
+      )}
+    </button>
+  );
+}
 
 function TypewriterList({ items, onDone, bullet = "•" }: { items: string[]; onDone: () => void; bullet?: string }) {
   const [visible, setVisible] = useState(0);
