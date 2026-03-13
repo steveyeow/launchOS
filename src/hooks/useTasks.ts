@@ -24,6 +24,8 @@ export function useTasks(userId: string) {
   useEffect(() => {
     load();
 
+    if (!supabase) return;
+
     // Subscribe to realtime updates on the tasks table for this user
     const channel = supabase
       .channel("tasks-realtime")
@@ -47,7 +49,7 @@ export function useTasks(userId: string) {
       )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => { supabase!.removeChannel(channel); };
   }, [userId, load]);
 
   const pause = useCallback(async (id: string) => {

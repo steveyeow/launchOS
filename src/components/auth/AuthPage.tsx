@@ -21,6 +21,11 @@ export default function AuthPage({ onBack }: Props) {
     setLoading(true);
     setError(null);
 
+    if (!supabase) {
+      setError("Auth not configured — running in demo mode");
+      setLoading(false);
+      return;
+    }
     if (mode === "signup") {
       const { error: err } = await supabase.auth.signUp({ email, password });
       if (err) setError(err.message);
